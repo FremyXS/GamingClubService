@@ -6,6 +6,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -13,24 +14,37 @@ import {
 @Entity()
 export class Equipment {
   @PrimaryGeneratedColumn()
+  @ApiProperty({ description: 'Note identifier', nullable: false })
   id: number;
 
   @Column({ nullable: false })
   @ApiProperty({ description: 'Note identifier', nullable: false })
   serial_number: string;
 
-  @OneToOne(() => Type)
+  @ManyToOne(() => Type, (type) => type.id)
   @JoinColumn()
-  @ApiProperty({ description: 'Note identifier', nullable: false })
+  @ApiProperty({
+    description: 'Note identifier',
+    nullable: false,
+    uniqueItems: false,
+  })
   type: Type;
 
-  @OneToOne(() => Model)
+  @ManyToOne(() => Model, (model) => model.id)
   @JoinColumn()
-  @ApiProperty({ description: 'Note identifier', nullable: false })
+  @ApiProperty({
+    description: 'Note identifier',
+    nullable: false,
+    uniqueItems: false,
+  })
   model: Model;
 
-  @OneToOne(() => Condition)
+  @ManyToOne(() => Condition, (condition) => condition.id)
   @JoinColumn()
-  @ApiProperty({ description: 'Note identifier', nullable: false })
+  @ApiProperty({
+    description: 'Note identifier',
+    nullable: false,
+    uniqueItems: false,
+  })
   condition: Condition;
 }

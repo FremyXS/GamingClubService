@@ -61,6 +61,16 @@ export class EquipmentService {
       );
     }
 
+    const equipment = await this.equipmentRepository.findOneBy({
+      serial_number: createEquipmentDto.serial_number,
+    });
+
+    if (equipment) {
+      throw new NotFoundException(
+        `Condition with ID ${createEquipmentDto.conditionId} is live`,
+      );
+    }
+
     const newEquipment = this.equipmentRepository.create({
       ...createEquipmentDto,
       type: type,
@@ -94,29 +104,40 @@ export class EquipmentService {
     return equipmentsDto;
   }
 
-  async findOne(serial_number: string) {
-    const equipment = await this.equipmentRepository.findOneBy({
-      serial_number: serial_number,
-    });
+  async findOne(id: number) {
+    const equipment = await this.equipmentRepository
+
+      .createQueryBuilder('equipment')
+      .leftJoinAndSelect('equipment.type', 'type_name')
+      .leftJoinAndSelect('equipment.model', 'model_name')
+      .leftJoinAndSelect('equipment.condition', 'condition_name')
+      .where('equipment.id = :id', {
+        id: id,
+      })
+      .getOne();
 
     if (!equipment) {
-      throw new NotFoundException(
-        `Related entity with ID ${serial_number} not found`,
-      );
+      throw new NotFoundException(`Related entity with ID ${id} not found`);
     }
 
-    return equipment;
+    const equipmentsDto: ResponseEquipmentDto = {
+      id: equipment.id,
+      serial_number: equipment.serial_number,
+      type_name: equipment.type.name,
+      model_name: equipment.model.name,
+      condition_name: equipment.condition.name,
+    };
+
+    return equipmentsDto;
   }
 
-  async update(serial_number: string, updateEquipmentDto: UpdateEquipmentDto) {
+  async update(id: number, updateEquipmentDto: UpdateEquipmentDto) {
     const equipment = await this.equipmentRepository.findOneBy({
-      serial_number: serial_number,
+      id: id,
     });
 
     if (!equipment) {
-      throw new NotFoundException(
-        `Equipment entity with ID ${serial_number} not found`,
-      );
+      throw new NotFoundException(`Equipment entity with ID ${id} not found`);
     }
 
     const model = await this.modelRepository.findOneBy({
@@ -151,17 +172,17 @@ export class EquipmentService {
 
     await this.equipmentRepository.update(
       {
-        serial_number: serial_number,
+        id: id,
       },
       {
-        ...updateEquipmentDto,
+        serial_number: updateEquipmentDto.serial_number,
         type: type,
         model: model,
         condition: condition,
       },
     );
 
-    return `This action updates a #${serial_number} equipment`;
+    return `This action updates a #${id} equipment`;
   }
 
   async remove(serial_number: string) {

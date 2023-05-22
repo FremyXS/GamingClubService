@@ -55,21 +55,20 @@ export class EquipmentController {
     const data = await this.equipmentService.findAll();
     return res.set({ 'X-Total-Count': data.length }).json(data);
   }
-
-  @Get('equipment/:serialnumber')
-  async findOne(@Param('serialnumber') serial_number: string) {
-    return this.equipmentService.findOne(serial_number);
+  @Get('equipment/:id')
+  async findOneById(@Param('id') id: string) {
+    return this.equipmentService.findOne(+id);
   }
 
-  @Put('equipment/:serialnumber')
+  @Put('equipment/:id')
   @ApiBody({
     type: UpdateEquipmentDto,
   })
   async update(
-    @Param('serialnumber') serial_number: string,
+    @Param('id') id: string,
     @Body() updateEquipmentDto: UpdateEquipmentDto,
   ) {
-    return this.equipmentService.update(serial_number, updateEquipmentDto);
+    return this.equipmentService.update(+id, updateEquipmentDto);
   }
 
   @Delete('equipment/:serialnumber')

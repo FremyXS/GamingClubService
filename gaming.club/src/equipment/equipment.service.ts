@@ -13,6 +13,7 @@ import { CreateConditionDto } from './dto/create-condition.dto';
 import { UpdateConditionDto } from './dto/update-condition.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ResponseEquipmentDto } from './dto/response-equipment.dto';
 
 @Injectable()
 export class EquipmentService {
@@ -73,7 +74,24 @@ export class EquipmentService {
   }
 
   async findAll() {
-    return this.equipmentRepository.find();
+    const equipments = await this.equipmentRepository
+      .createQueryBuilder('equipment')
+      .leftJoinAndSelect('equipment.type', 'type_name')
+      .leftJoinAndSelect('equipment.model', 'model_name')
+      .leftJoinAndSelect('equipment.condition', 'condition_name')
+      .getMany();
+
+    const equipmentsDto: ResponseEquipmentDto[] = equipments.map((el) => {
+      const dto: ResponseEquipmentDto = {
+        id: el.id,
+        serial_number: el.serial_number,
+        model_name: el.model.name,
+        type_name: el.type.name,
+        condition_name: el.condition.name,
+      };
+      return dto;
+    });
+    return equipmentsDto;
   }
 
   async findOne(serial_number: string) {

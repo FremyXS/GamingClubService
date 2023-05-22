@@ -6,6 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  Response,
+  Put,
 } from '@nestjs/common';
 import { EquipmentService } from './equipment.service';
 import { CreateEquipmentDto } from './dto/create-equipment.dto';
@@ -27,6 +30,7 @@ import { UpdateTypeDto } from './dto/update-type.dto';
 import { CreateConditionDto } from './dto/create-condition.dto';
 import { Condition } from './entities/condition.entity';
 import { UpdateConditionDto } from './dto/update-condition.dto';
+import { Response as Res } from 'express';
 
 @ApiTags('equipment')
 @Controller('equipments')
@@ -47,8 +51,9 @@ export class EquipmentController {
   @ApiResponse({
     type: [Equipment],
   })
-  async findAll() {
-    return this.equipmentService.findAll();
+  async findAll(@Response() res: Res) {
+    const data = await this.equipmentService.findAll();
+    return res.set({ 'X-Total-Count': data.length }).json(data);
   }
 
   @Get('equipment/:serialnumber')
@@ -56,7 +61,7 @@ export class EquipmentController {
     return this.equipmentService.findOne(serial_number);
   }
 
-  @Patch('equipment/:serialnumber')
+  @Put('equipment/:serialnumber')
   @ApiBody({
     type: UpdateEquipmentDto,
   })
@@ -85,9 +90,9 @@ export class EquipmentController {
   @Get('model')
   @ApiOkResponse({ type: Model, isArray: true })
   @ApiOperation({ summary: 'Get all entities' })
-  async findAllModel() {
-    console.log(1);
-    return this.equipmentService.findAllModels();
+  async findAllModel(@Response() res: Res) {
+    const data = await this.equipmentService.findAllModels();
+    return res.set({ 'X-Total-Count': data.length }).json(data);
   }
 
   @Get('model/:id')
@@ -95,7 +100,7 @@ export class EquipmentController {
     return this.equipmentService.findOneModel(+id);
   }
 
-  @Patch('model/:id')
+  @Put('model/:id')
   @ApiBody({
     type: UpdateModelDto,
   })
@@ -125,8 +130,9 @@ export class EquipmentController {
   @ApiResponse({
     type: [Type],
   })
-  async findAllType() {
-    return this.equipmentService.findAllType();
+  async findAllType(@Response() res: Res) {
+    const data = await this.equipmentService.findAllType();
+    return res.set({ 'X-Total-Count': data.length }).json(data);
   }
 
   @Get('type/:id')
@@ -134,7 +140,7 @@ export class EquipmentController {
     return this.equipmentService.findOneType(+id);
   }
 
-  @Patch('type/:id')
+  @Put('type/:id')
   @ApiBody({
     type: UpdateTypeDto,
   })
@@ -161,8 +167,9 @@ export class EquipmentController {
   @ApiResponse({
     type: [Condition],
   })
-  async findAllCondition() {
-    return this.equipmentService.findAllCondition();
+  async findAllCondition(@Response() res: Res) {
+    const data = await this.equipmentService.findAllCondition();
+    return res.set({ 'X-Total-Count': data.length }).json(data);
   }
 
   @Get('condition/:id')
@@ -170,7 +177,7 @@ export class EquipmentController {
     return this.equipmentService.findOneCondtioon(+id);
   }
 
-  @Patch('condition/:id')
+  @Put('condition/:id')
   @ApiBody({
     type: UpdateConditionDto,
   })

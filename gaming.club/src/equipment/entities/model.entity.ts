@@ -13,5 +13,5 @@ export class Model {
   name: string;
 
   @OneToMany(() => Equipment, (equipment) => equipment.model)
-  photos: Equipment[];
+  equipments: Equipment[];
 }

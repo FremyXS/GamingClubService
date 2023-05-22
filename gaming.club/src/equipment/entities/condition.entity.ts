@@ -13,5 +13,5 @@ export class Condition {
   name: string;
 
   @OneToMany(() => Equipment, (equipment) => equipment.condition)
-  photos: Equipment[];
+  equipments: Equipment[];
 }

@@ -13,5 +13,5 @@ export class Type {
   name: string;
 
   @OneToMany(() => Equipment, (equipment) => equipment.type)
-  photos: Equipment[];
+  equipments: Equipment[];
 }

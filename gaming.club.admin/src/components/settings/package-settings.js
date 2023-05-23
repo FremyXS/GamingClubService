@@ -1,14 +1,19 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, Edit, TextInput, SimpleForm, Create, useRecordContext, ReferenceInput, SelectInput, ReferenceArrayInput, FunctionField, AutocompleteInput, required, DateField, DateTimeInput, NumberInput, NumberField } from 'react-admin';
+import {
+    List, Datagrid, TextField, EditButton, Edit, TextInput, SimpleForm, Create, useRecordContext,
+    required, ReferenceManyToManyInput,
+    NumberInput, NumberField, SelectArrayInput, ReferenceInput, SelectInput
+} from 'react-admin';
 
 export const PackageList = () => (
     <List>
         <Datagrid>
             <TextField source="id" />
             <TextField source="name" />
-            <DateField format={v => new Date(v)} showTime={true} showDate={false} source="startTime" />
-            <DateField showTime={true} showDate={false} source="endTime" />
+            <TextField source="startTime" />
+            <TextField source="endTime" />
             <NumberField source="price" />
+            <TextField source="type_name" />
             <EditButton />
         </Datagrid>
     </List>
@@ -25,9 +30,12 @@ export const PackageEdit = () => {
             <SimpleForm>
                 <TextInput disabled source="id" />
                 <TextInput source="name" />
-                <DateTimeInput options={{ format: 'HH:mm' }} source="startTime" />
-                <DateTimeInput options={{ format: 'HH:mm' }} source="endTime" />
+                <TextInput source="startTime" />
+                <TextInput source="endTime" />
                 <NumberInput source="price" />
+                <ReferenceInput source="typeId" reference="equipments/type">
+                    <SelectInput optionText="name" />
+                </ReferenceInput>
                 <EditButton />
             </SimpleForm>
         </Edit>
@@ -38,9 +46,12 @@ export const PackageCreate = () => (
     <Create title="Create a Post">
         <SimpleForm>
             <TextInput source="name" />
-            <DateTimeInput options={{ format: 'HH:mm' }} source="startTime" />
-            <DateTimeInput format={v => Date(v)} source="endTime" />
+            <TextInput source="startTime" />
+            <TextInput source="endTime" />
             <NumberInput source="price" />
+            <ReferenceInput source="typeId" reference="equipments/type">
+                <SelectInput optionText="name" />
+            </ReferenceInput>
             <EditButton />
         </SimpleForm>
     </Create>

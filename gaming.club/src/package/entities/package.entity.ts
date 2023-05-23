@@ -1,5 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
+import { Type } from 'src/equipment/entities/type.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Timestamp,
+} from 'typeorm';
 
 @Entity()
 export class Package {
@@ -34,4 +44,8 @@ export class Package {
     type: 'decimal',
   })
   price: number;
+
+  @ManyToOne(() => Type, (type) => type.id)
+  @JoinColumn()
+  type: Type;
 }

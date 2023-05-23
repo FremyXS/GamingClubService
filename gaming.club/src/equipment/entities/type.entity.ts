@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Equipment } from './equipment.entity';
+import { Package } from '../../package/entities/package.entity';
 
 @Entity()
 export class Type {
@@ -13,5 +21,10 @@ export class Type {
   name: string;
 
   @OneToMany(() => Equipment, (equipment) => equipment.type)
+  @JoinTable()
   equipments: Equipment[];
+
+  @OneToMany(() => Package, (packages) => packages.type)
+  @JoinTable()
+  packages: Package[];
 }

@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Timestamp } from 'typeorm';
 
-export class CreatePackageDto {
+export class ResponsePackageDto {
   @ApiProperty()
   name: string;
 
@@ -21,5 +20,5 @@ export class CreatePackageDto {
   price: number;
 
   @ApiProperty()
-  typeId: number;
+  type_name: string;
 }

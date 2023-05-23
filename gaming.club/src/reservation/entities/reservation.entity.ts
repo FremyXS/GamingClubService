@@ -3,10 +3,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Status } from './status.entity';
+import { Package } from 'src/package/entities/package.entity';
 
 @Entity()
 export class Reservation {
@@ -40,4 +43,8 @@ export class Reservation {
     type: 'decimal',
   })
   price: number;
+
+  @ManyToMany(() => Package)
+  @JoinTable()
+  packages: Package[];
 }

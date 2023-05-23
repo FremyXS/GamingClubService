@@ -21,4 +21,7 @@ export class CreateReservationDto {
 
   @ApiProperty()
   statusId: number;
+
+  @ApiProperty()
+  packageIds: number[];
 }

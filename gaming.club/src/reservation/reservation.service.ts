@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Reservation } from './entities/reservation.entity';
 import { CreateStatusDto } from './dto/create-status.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { Package } from 'src/package/entities/package.entity';
 
 @Injectable()
 export class ReservationService {
@@ -15,10 +16,28 @@ export class ReservationService {
     private readonly statusRepository: Repository<Status>,
     @InjectRepository(Reservation)
     private readonly reservationRepository: Repository<Reservation>,
+    @InjectRepository(Package)
+    private readonly packageRepository: Repository<Package>,
   ) {}
 
   //reservation
   async create(createReservationDto: CreateReservationDto) {
+    const packages: Package[] = [];
+
+    createReservationDto.packageIds.map(async (el) => {
+      const packageEntity = await this.packageRepository.findOneBy({
+        id: el,
+      });
+
+      if (!packageEntity) {
+        throw new NotFoundException(
+          `Package whit id: ${createReservationDto.statusId} not found`,
+        );
+      }
+
+      packages.push(packageEntity);
+    });
+
     const status = await this.statusRepository.findOneBy({
       id: createReservationDto.statusId,
     });
@@ -31,6 +50,8 @@ export class ReservationService {
 
     const newReservation = this.reservationRepository.create({
       ...createReservationDto,
+      status: status,
+      packages: packages,
     });
 
     return await this.reservationRepository.save(newReservation);

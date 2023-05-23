@@ -185,20 +185,18 @@ export class EquipmentService {
     return `This action updates a #${id} equipment`;
   }
 
-  async remove(serial_number: string) {
+  async remove(id: number) {
     const equipment = await this.equipmentRepository.findOneBy({
-      serial_number: serial_number,
+      id: id,
     });
 
     if (!equipment) {
-      throw new NotFoundException(
-        `Related entity with ID ${serial_number} not found`,
-      );
+      throw new NotFoundException(`Related entity with ID ${id} not found`);
     }
 
     await this.equipmentRepository.remove(equipment);
 
-    return `This action removes a #${serial_number} equipment`;
+    return `This action removes a #${id} equipment`;
   }
 
   // MODELS

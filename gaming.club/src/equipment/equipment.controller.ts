@@ -71,9 +71,9 @@ export class EquipmentController {
     return this.equipmentService.update(+id, updateEquipmentDto);
   }
 
-  @Delete('equipment/:serialnumber')
-  async remove(@Param('serialnumber') serial_number: string) {
-    return this.equipmentService.remove(serial_number);
+  @Delete('equipment/:id')
+  async remove(@Param('id') id: string) {
+    return this.equipmentService.remove(+id);
   }
 
   //Models

@@ -10,4 +10,22 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column()
+  email: string;
+
+  @Column()
+  phone: string;
+
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @Column()
+  registerDate: string;
+
+  @Column()
+  lastActivityDate: string;
 }

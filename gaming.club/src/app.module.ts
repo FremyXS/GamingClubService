@@ -12,6 +12,7 @@ import { Package } from './package/entities/package.entity';
 import { ReservationModule } from './reservation/reservation.module';
 import { Status } from './reservation/entities/status.entity';
 import { Reservation } from './reservation/entities/reservation.entity';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { Reservation } from './reservation/entities/reservation.entity';
     EquipmentModule,
     PackageModule,
     ReservationModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

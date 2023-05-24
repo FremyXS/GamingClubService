@@ -13,6 +13,7 @@ import { ReservationModule } from './reservation/reservation.module';
 import { Status } from './reservation/entities/status.entity';
 import { Reservation } from './reservation/entities/reservation.entity';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { UsersModule } from './users/users.module';
     PackageModule,
     ReservationModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

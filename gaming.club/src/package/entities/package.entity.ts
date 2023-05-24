@@ -18,8 +18,16 @@ export class Package {
   id: number;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    nullable: false,
+  })
   name: string;
+
+  @ApiProperty()
+  @Column({
+    nullable: false,
+  })
+  description: string;
 
   @ApiProperty({
     format: 'time',
@@ -27,6 +35,7 @@ export class Package {
   })
   @Column({
     type: 'time',
+    nullable: false,
   })
   startTime: string;
 
@@ -36,12 +45,14 @@ export class Package {
   })
   @Column({
     type: 'time',
+    nullable: false,
   })
   endTime: string;
 
   @ApiProperty()
   @Column({
     type: 'decimal',
+    nullable: false,
   })
   price: number;
 

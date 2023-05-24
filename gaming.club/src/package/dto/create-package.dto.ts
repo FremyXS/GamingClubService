@@ -5,6 +5,9 @@ export class CreatePackageDto {
   @ApiProperty()
   name: string;
 
+  @ApiProperty()
+  description: string;
+
   @ApiProperty({
     format: 'time',
     example: '12:30',

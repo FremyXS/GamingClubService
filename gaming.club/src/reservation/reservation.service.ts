@@ -24,7 +24,7 @@ export class ReservationService {
   async create(createReservationDto: CreateReservationDto) {
     const packages: Package[] = [];
 
-    createReservationDto.packageIds.map(async (el) => {
+    createReservationDto.packageIds.forEach(async (el) => {
       const packageEntity = await this.packageRepository.findOneBy({
         id: el,
       });
@@ -58,7 +58,12 @@ export class ReservationService {
   }
 
   async findAll() {
-    return await this.reservationRepository.find();
+    const res = await this.reservationRepository
+      .createQueryBuilder('reservation')
+      .leftJoinAndSelect('reservation.packages', 'package')
+      .leftJoinAndSelect('reservation.status', 'status')
+      .getMany();
+    return res;
   }
 
   async findOne(id: number) {
@@ -68,13 +73,29 @@ export class ReservationService {
   }
 
   async update(id: number, updateReservationDto: UpdateReservationDto) {
-    const reservation = this.reservationRepository.findOneBy({
+    const reservation = await this.reservationRepository.findOneBy({
       id: id,
     });
 
     if (!reservation) {
       throw new NotFoundException(`Reservation whit id: ${id} not found`);
     }
+
+    const packages: Package[] = [];
+
+    updateReservationDto.packageIds.forEach(async (el) => {
+      const packageEntity = await this.packageRepository.findOneBy({
+        id: el,
+      });
+
+      if (!packageEntity) {
+        throw new NotFoundException(
+          `Package whit id: ${updateReservationDto.statusId} not found`,
+        );
+      }
+
+      packages.push(packageEntity);
+    });
 
     const status = await this.statusRepository.findOneBy({
       id: updateReservationDto.statusId,
@@ -86,11 +107,14 @@ export class ReservationService {
       );
     }
 
-    await this.reservationRepository.update(id, {
+    const updateReservation = {
+      ...reservation,
       ...updateReservationDto,
       status: status,
-      ...{ statusId: undefined },
-    });
+      packages: packages,
+    };
+
+    await this.reservationRepository.save(updateReservation);
 
     return `This action updates a #${id} reservation`;
   }

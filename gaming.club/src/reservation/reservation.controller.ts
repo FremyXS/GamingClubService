@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Put,
+  Response,
 } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
@@ -14,6 +15,7 @@ import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateStatusDto } from './dto/create-status.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { Response as Res } from 'express';
 
 @ApiTags('Reservations')
 @Controller('reservations')
@@ -26,8 +28,9 @@ export class ReservationController {
   }
 
   @Get('reservation')
-  async findAll() {
-    return this.reservationService.findAll();
+  async findAll(@Response() res: Res) {
+    const data = await this.reservationService.findAll();
+    return res.set({ 'X-Total-Count': data.length }).json(data);
   }
 
   @Get('reservation/:id')
@@ -54,8 +57,9 @@ export class ReservationController {
   }
 
   @Get('status')
-  async statusFindAll() {
-    return this.reservationService.statusFindAll();
+  async statusFindAll(@Response() res: Res) {
+    const data = await this.reservationService.statusFindAll();
+    return res.set({ 'X-Total-Count': data.length }).json(data);
   }
 
   @Get('status/:id')

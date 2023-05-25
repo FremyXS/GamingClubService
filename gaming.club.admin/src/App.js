@@ -9,11 +9,13 @@ import { EquipmentsConditionCreate, EquipmentsConditionEdit, EquipmentsCondition
 import { PackageCreate, PackageEdit, PackageList } from './components/settings/package-settings';
 import { ReservationCreate, ReservationEdit, ReservationList } from './components/settings/reservations-settings';
 import { ReservationStatusCreate, ReservationStatusEdit, ReservationStatusList } from './components/settings/reservations-status-settings';
+import authProvider from './halpers/authProvider';
+import { Dashboard } from '@mui/icons-material';
 
 const dataProvider = jsonServerProvider('http://localhost:8000');
 
 const App = () => (
-  <Admin dataProvider={dataProvider}>
+  <Admin dashboard={Dashboard} dataProvider={dataProvider} authProvider={authProvider}>
     <Resource title="Equipments" name='equipments/equipment' list={EquipmentList} edit={EquipmentEdit} create={EquipmentCreate}/>
     <Resource name='equipments/model' list={EquipmentsModelList} edit={EquipmentsModelEdit} create={EquipmentsModelCreate}/>
     <Resource name='equipments/type' list={EquipmentsTypeList} edit={EquipmentsTypeEdit} create={EquipmentsTypeCreate}/>

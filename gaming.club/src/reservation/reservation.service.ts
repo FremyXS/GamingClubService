@@ -25,7 +25,6 @@ export class ReservationService {
     const date = new Date();
     date.setHours(Number(hours));
     date.setMinutes(Number(minutes));
-    console.log(date); // выводит текущую дату с указанным временем
     return date;
   };
 
@@ -136,11 +135,16 @@ export class ReservationService {
       );
     }
 
+    const { startTime, endTime, price } = this.getSettingsPackage(packages);
+
     const updateReservation = {
       ...reservation,
       ...updateReservationDto,
       status: status,
       packages: packages,
+      startTime: startTime,
+      endTime: endTime,
+      price: price,
     };
 
     await this.reservationRepository.save(updateReservation);

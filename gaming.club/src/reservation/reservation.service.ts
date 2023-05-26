@@ -115,12 +115,15 @@ export class ReservationService {
   };
 
   private addDataToAnalytics = async (price: number) => {
+    let newModel = false;
+
     const currentDate = new Date();
     let model = await this.analitycsRepository.findOneBy({
       date: currentDate,
     });
 
     if (!model) {
+      newModel = true;
       model = this.analitycsRepository.create({
         date: currentDate,
         countPayments: 0,
@@ -132,16 +135,28 @@ export class ReservationService {
     model.payday += price;
     model.countPayments++;
 
-    await this.analitycsRepository.save(model);
+    if (newModel) {
+      await this.analitycsRepository.save(model);
+    } else {
+      await this.analitycsRepository.update(
+        {
+          date: currentDate,
+        },
+        { ...model },
+      );
+    }
   };
 
   private changeMinDataToAnalytics = async (price: number) => {
+    let newModel = false;
+
     const currentDate = new Date();
     let model = await this.analitycsRepository.findOneBy({
       date: currentDate,
     });
 
     if (!model) {
+      newModel = true;
       model = this.analitycsRepository.create({
         date: currentDate,
         countPayments: 0,
@@ -153,7 +168,16 @@ export class ReservationService {
     model.payday -= price;
     model.countCancellations++;
 
-    await this.analitycsRepository.save(model);
+    if (newModel) {
+      await this.analitycsRepository.save(model);
+    } else {
+      await this.analitycsRepository.update(
+        {
+          date: currentDate,
+        },
+        { ...model },
+      );
+    }
   };
 
   async create(createReservationDto: CreateReservationDto, userLogin: string) {
@@ -267,12 +291,24 @@ export class ReservationService {
   }
 
   async update(id: number, updateReservationDto: UpdateReservationDto) {
-    const reservation = await this.reservationRepository.findOneBy({
-      id: id,
-    });
+    // const reservation = await this.reservationRepository.findOneBy({
+    //   id: id,
+    // });
+
+    const reservation = await this.reservationRepository
+      .createQueryBuilder('reservation')
+      .leftJoinAndSelect('reservation.status', 'status')
+      .where('reservation.id = :id', {
+        id: id,
+      })
+      .getOne();
 
     if (!reservation) {
       throw new NotFoundException(`Reservation whit id: ${id} not found`);
+    }
+
+    if (reservation.status.name === StatusesEnum.Cancelled) {
+      throw new NotFoundException(`Reservation whit id: ${id} is cancelled`);
     }
 
     const packages: Package[] = [];
@@ -289,22 +325,11 @@ export class ReservationService {
       packages.push(packageEntity);
     });
 
-    const status = await this.statusRepository.findOneBy({
-      id: updateReservationDto.statusId,
-    });
-
-    if (!status) {
-      throw new NotFoundException(
-        `Status whit id: ${updateReservationDto.statusId} not found`,
-      );
-    }
-
     const { startTime, endTime, price } = this.getSettingsPackage(packages);
 
     const updateReservation = {
       ...reservation,
       ...updateReservationDto,
-      status: status,
       packages: packages,
       startTime: startTime,
       endTime: endTime,

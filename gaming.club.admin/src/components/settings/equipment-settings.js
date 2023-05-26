@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, Edit, TextInput, SimpleForm, Create, useRecordContext, ReferenceInput, SelectInput, ReferenceArrayInput, FunctionField, AutocompleteInput, required } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, Edit, TextInput, SimpleForm, Create, useRecordContext, ReferenceInput, SelectInput } from 'react-admin';
 
 export const EquipmentList = () => (
     <List>

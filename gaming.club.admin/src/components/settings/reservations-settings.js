@@ -1,8 +1,7 @@
 import React from 'react';
 import {
     List, Datagrid, TextField, EditButton, Edit, TextInput, SimpleForm, Create, useRecordContext,
-    required, ReferenceManyToManyInput,
-    NumberInput, NumberField, SelectArrayInput, ReferenceInput, SelectInput, ArrayField, SingleFieldList, ChipField, ReferenceArrayInput
+    NumberField, SelectArrayInput, ReferenceInput, SelectInput, ArrayField, ChipField, ReferenceArrayInput
 } from 'react-admin';
 
 export const ReservationList = () => (

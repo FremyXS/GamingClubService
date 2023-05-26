@@ -1,8 +1,7 @@
 import React from 'react';
 import {
     List, Datagrid, TextField, EditButton, Edit, TextInput, SimpleForm, Create, useRecordContext,
-    required, ReferenceManyToManyInput,
-    NumberInput, NumberField, SelectArrayInput, ReferenceInput, SelectInput
+    NumberInput, NumberField, ReferenceInput, SelectInput
 } from 'react-admin';
 
 export const PackageList = () => (

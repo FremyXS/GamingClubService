@@ -37,9 +37,9 @@ export const ReservationEdit = () => {
             <SimpleForm>
                 <TextInput disabled source="id" />
                 <TextInput source="date" />
-                <ReferenceInput source="statusId" reference="reservations/status">
-                    <SelectInput optionText="name" />
-                </ReferenceInput>
+                <ReferenceArrayInput source="packageIds" reference="package">
+                    <SelectArrayInput optionText="name" />
+                </ReferenceArrayInput>
                 <EditButton />
             </SimpleForm>
         </Edit>

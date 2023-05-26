@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +14,9 @@ import { Reservation } from './entities/reservation.entity';
 import { Package } from 'src/package/entities/package.entity';
 import { StatusesEnum } from './entities/status.enum';
 import { User } from 'src/users/entities/user.entity';
+import { Type } from 'src/equipment/entities/type.entity';
+import { TypesEnum } from 'src/equipment/entities/type.enum';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class ReservationService {
@@ -20,6 +29,8 @@ export class ReservationService {
     private readonly packageRepository: Repository<Package>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Type)
+    private readonly typeRepository: Repository<Type>,
   ) {}
 
   //reservation
@@ -51,21 +62,103 @@ export class ReservationService {
     return { startTime, endTime, price };
   };
 
-  async create(createReservationDto: CreateReservationDto, userLogin: string) {
-    const packages: Package[] = [];
+  private getDevices = async () => {
+    const temp = await this.typeRepository
+      .createQueryBuilder('type')
+      .leftJoinAndSelect('type.equipments', 'equipments')
+      .getMany();
 
-    console.log(createReservationDto);
-    createReservationDto.packageIds.forEach(async (el) => {
-      const packageEntity = await this.packageRepository.findOneBy({
-        id: el,
+    const pces = temp.find((el) => el.name === TypesEnum.PC);
+
+    const consoles = temp.find((el) => el.name === TypesEnum.GameConsole);
+
+    return {
+      count_pc: pces.equipments.length,
+      count_console: consoles.equipments.length,
+    };
+  };
+
+  private checkReservationToDate = async (date: Date) => {
+    const reservations = await this.reservationRepository
+      .createQueryBuilder('reservation')
+      .leftJoinAndSelect('reservation.packages', 'package')
+      .leftJoinAndSelect('package.type', 'type')
+      .leftJoinAndSelect('reservation.status', 'status')
+      .where('reservation.date = :date', {
+        date: date,
+      })
+      .getMany();
+
+    const { count_pc, count_console } = await this.getDevices();
+
+    let busy_pc = 0,
+      busy_console = 0;
+
+    reservations.forEach((el) => {
+      el.packages.forEach((pac) => {
+        if (pac.type.name === TypesEnum.PC) {
+          busy_pc++;
+        }
+
+        if (pac.type.name === TypesEnum.GameConsole) {
+          busy_console++;
+        }
       });
-
-      if (!packageEntity) {
-        throw new NotFoundException(`Package whit id: ${el} not found`);
-      }
-
-      packages.push(packageEntity);
     });
+
+    return {
+      free_pc: count_pc - busy_pc,
+      free_console: count_console - busy_console,
+    };
+  };
+
+  async create(createReservationDto: CreateReservationDto, userLogin: string) {
+    let { free_pc, free_console } = await this.checkReservationToDate(
+      createReservationDto.date,
+    );
+
+    const packages: Package[] = [];
+    const packagesEntity = await this.packageRepository
+      .createQueryBuilder('package')
+      .leftJoinAndSelect('package.type', 'type')
+      .getMany();
+
+    if (
+      createReservationDto.packageIds == null ||
+      createReservationDto.packageIds.length <= 0
+    ) {
+      throw new NotFoundException('Packages cannot be missing');
+    }
+
+    try {
+      createReservationDto.packageIds.forEach((el) => {
+        const packageEntity = packagesEntity.find((pac) => pac.id === el);
+
+        if (!packageEntity) {
+          throw new NotFoundException(`Package whit id: ${el} not found`);
+        }
+
+        if (packageEntity.type.name === TypesEnum.PC) {
+          free_pc--;
+        }
+
+        if (free_pc < 0) {
+          throw new ConflictException('There are no free computers');
+        }
+
+        if (packageEntity.type.name === TypesEnum.GameConsole) {
+          free_console--;
+        }
+
+        if (free_console < 0) {
+          throw new ConflictException('There are no free consoles');
+        }
+
+        packages.push(packageEntity);
+      });
+    } catch (error: any) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     const status = await this.statusRepository.findOneBy({
       name: StatusesEnum.Expectation,

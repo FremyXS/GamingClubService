@@ -8,9 +8,12 @@ import { Package } from 'src/package/entities/package.entity';
 import { Repository } from 'typeorm';
 import { StatusesEnum } from './entities/status.enum';
 import { User } from 'src/users/entities/user.entity';
+import { Type } from 'src/equipment/entities/type.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Reservation, Status, Package, User])],
+  imports: [
+    TypeOrmModule.forFeature([Reservation, Status, Package, User, Type]),
+  ],
   controllers: [ReservationController],
   providers: [ReservationService],
 })

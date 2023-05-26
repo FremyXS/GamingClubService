@@ -86,7 +86,7 @@ export class ReservationController {
     return this.reservationService.statusFindOne(+id);
   }
 
-  @Header('Content-Range', 'status 0-9/100')
+  @Header('Content-Range', 'analytics 0-9/100')
   @Get('analytics')
   async analyticsFindAll(@Response() res: Res) {
     const data = await this.reservationService.analyticsFindAll();

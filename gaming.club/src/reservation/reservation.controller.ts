@@ -20,15 +20,23 @@ import { CreateStatusDto } from './dto/create-status.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { Response as Res } from 'express';
 import { AuthGuard } from 'src/auth/auth.guars';
+import { RolesEnum } from 'src/users/entities/role.enum';
 
 @ApiTags('Reservations')
 @Controller('reservations')
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 
+  @UseGuards(AuthGuard)
   @Post('reservation')
-  async create(@Body() createReservationDto: CreateReservationDto) {
-    return this.reservationService.create(createReservationDto);
+  async create(
+    @Body() createReservationDto: CreateReservationDto,
+    @Request() req,
+  ) {
+    return this.reservationService.create(
+      createReservationDto,
+      req.user.username,
+    );
   }
 
   @UseGuards(AuthGuard)
@@ -36,7 +44,15 @@ export class ReservationController {
   @Get('reservation')
   async findAll(@Response() res: Res, @Request() req) {
     console.log(req.user);
-    const data = await this.reservationService.findAll();
+
+    let data = null;
+    if (req.user.role === RolesEnum.User) {
+      data = await this.reservationService.findAllByLoginUser(
+        req.user.username,
+      );
+    } else {
+      data = await this.reservationService.findAll();
+    }
     return res.set({ 'X-Total-Count': data.length }).json(data);
   }
 

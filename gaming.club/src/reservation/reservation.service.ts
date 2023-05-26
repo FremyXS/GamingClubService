@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Reservation } from './entities/reservation.entity';
 import { Package } from 'src/package/entities/package.entity';
 import { StatusesEnum } from './entities/status.enum';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ReservationService {
@@ -17,6 +18,8 @@ export class ReservationService {
     private readonly reservationRepository: Repository<Reservation>,
     @InjectRepository(Package)
     private readonly packageRepository: Repository<Package>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   //reservation
@@ -48,7 +51,7 @@ export class ReservationService {
     return { startTime, endTime, price };
   };
 
-  async create(createReservationDto: CreateReservationDto) {
+  async create(createReservationDto: CreateReservationDto, userLogin: string) {
     const packages: Package[] = [];
 
     createReservationDto.packageIds.forEach(async (el) => {
@@ -73,6 +76,10 @@ export class ReservationService {
       );
     }
 
+    const user = await this.userRepository.findOneBy({
+      login: userLogin,
+    });
+
     const { startTime, endTime, price } = this.getSettingsPackage(packages);
 
     const newReservation = this.reservationRepository.create({
@@ -82,9 +89,24 @@ export class ReservationService {
       startTime: startTime,
       endTime: endTime,
       price: price,
+      user: user,
     });
 
     return await this.reservationRepository.save(newReservation);
+  }
+
+  async findAllByLoginUser(login: string) {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.reservations', 'reservation')
+      .leftJoinAndSelect('reservation.packages', 'package')
+      .leftJoinAndSelect('reservation.status', 'status')
+      .where('user.login = :login', {
+        login: login,
+      })
+      .getOne();
+
+    return user.reservations;
   }
 
   async findAll() {

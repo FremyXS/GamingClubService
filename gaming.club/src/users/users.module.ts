@@ -5,6 +5,7 @@ import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { RolesEnum } from './entities/role.enum';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Role, User])],
@@ -19,11 +20,14 @@ export class UsersModule {
   ) {}
 
   async onModuleInit() {
-    const roles = ['admin', 'manager', 'user'];
-    for (const name of roles) {
-      const role = await this.roleRepository.findOneBy({ name: name });
+    for (const name in RolesEnum) {
+      const role = await this.roleRepository.findOneBy({
+        name: RolesEnum[name],
+      });
       if (!role) {
-        await this.roleRepository.save(this.roleRepository.create({ name }));
+        await this.roleRepository.save(
+          this.roleRepository.create({ name: RolesEnum[name] }),
+        );
       }
     }
   }

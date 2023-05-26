@@ -16,6 +16,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { Role } from './users/entities/role.entity';
 import { User } from './users/entities/user.entity';
+import { Analytics } from './reservation/entities/analytics.entity';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { User } from './users/entities/user.entity';
         Reservation,
         Status,
         Role,
-        User
+        User,
+        Analytics
       ],
       synchronize: true,
     }),

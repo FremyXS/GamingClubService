@@ -85,4 +85,11 @@ export class ReservationController {
   async statusFindOne(@Param('id') id: string) {
     return this.reservationService.statusFindOne(+id);
   }
+
+  @Header('Content-Range', 'status 0-9/100')
+  @Get('analytics')
+  async analyticsFindAll(@Response() res: Res) {
+    const data = await this.reservationService.analyticsFindAll();
+    return res.set({ 'X-Total-Count': data.length }).json(data);
+  }
 }

@@ -16,7 +16,7 @@ import { StatusesEnum } from './entities/status.enum';
 import { User } from 'src/users/entities/user.entity';
 import { Type } from 'src/equipment/entities/type.entity';
 import { TypesEnum } from 'src/equipment/entities/type.enum';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { Analytics } from './entities/analytics.entity';
 
 @Injectable()
 export class ReservationService {
@@ -31,6 +31,8 @@ export class ReservationService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Type)
     private readonly typeRepository: Repository<Type>,
+    @InjectRepository(Analytics)
+    private readonly analitycsRepository: Repository<Analytics>,
   ) {}
 
   //reservation
@@ -112,7 +114,30 @@ export class ReservationService {
     };
   };
 
+  private addDataToAnalytics = async (price: number) => {
+    const currentDate = new Date();
+    let model = await this.analitycsRepository.findOneBy({
+      date: currentDate,
+    });
+
+    if (!model) {
+      model = this.analitycsRepository.create({
+        date: currentDate,
+        countPayments: 0,
+        countCancellations: 0,
+        payday: 0,
+      });
+    }
+
+    model.payday += price;
+    model.countPayments++;
+
+    await this.analitycsRepository.save(model);
+  };
+
   async create(createReservationDto: CreateReservationDto, userLogin: string) {
+    const currentDate = new Date();
+    console.log(`Current date is ${currentDate}`);
     let { free_pc, free_console } = await this.checkReservationToDate(
       createReservationDto.date,
     );
@@ -185,6 +210,8 @@ export class ReservationService {
       price: price,
       user: user,
     });
+
+    await this.addDataToAnalytics(price);
 
     return await this.reservationRepository.save(newReservation);
   }
@@ -277,7 +304,18 @@ export class ReservationService {
       throw new NotFoundException(`Reservation whit id: ${id} not found`);
     }
 
-    await this.reservationRepository.remove(reservation);
+    reservation.status = await this.statusRepository.findOneBy({
+      name: StatusesEnum.Cancelled,
+    });
+
+    await this.reservationRepository.update(
+      {
+        id: id,
+      },
+      {
+        ...reservation,
+      },
+    );
 
     return `This action removes a #${id} reservation`;
   }
@@ -292,5 +330,11 @@ export class ReservationService {
     return await this.statusRepository.findOneBy({
       id: id,
     });
+  }
+
+  //analytics
+
+  async analyticsFindAll() {
+    return await this.analitycsRepository.find();
   }
 }

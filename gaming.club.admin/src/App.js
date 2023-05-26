@@ -12,6 +12,7 @@ import { nameRoles } from './commons/roles';
 import simpleRestProvider from 'ra-data-simple-rest';
 import MyChart from './components/charts/MyCharts';
 import React from 'react';
+import { UserCreate, UserEdit, UserList } from './components/settings/users-settings';
 
 const httpClient = async (url, options = {}) => {
   if (!options.headers) {
@@ -35,6 +36,7 @@ const App = () => (
             <Resource name='equipments/type' list={EquipmentsTypeList} />
             <Resource name='equipments/condition' list={EquipmentsConditionList} edit={EquipmentsConditionEdit} create={EquipmentsConditionCreate} />
             <Resource name='package' list={PackageList} edit={PackageEdit} create={PackageCreate} />
+            <Resource name='users/user' list={UserList} edit={UserEdit} create={UserCreate} />
           </>
         }
         {permissions === nameRoles.manager &&

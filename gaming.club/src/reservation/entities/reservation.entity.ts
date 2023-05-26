@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Status } from './status.entity';
 import { Package } from 'src/package/entities/package.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity()
 export class Reservation {
@@ -47,4 +48,8 @@ export class Reservation {
   @ManyToMany(() => Package)
   @JoinTable()
   packages: Package[];
+
+  @ManyToOne(() => User, (user) => user.reservations)
+  @JoinColumn()
+  user: User;
 }

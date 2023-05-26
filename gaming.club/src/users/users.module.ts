@@ -15,7 +15,8 @@ import { User } from './entities/user.entity';
 export class UsersModule {
   constructor(
     @InjectRepository(Role)
-    private readonly roleRepository: Repository<Role>) {}
+    private readonly roleRepository: Repository<Role>,
+  ) {}
 
   async onModuleInit() {
     const roles = ['admin', 'manager', 'user'];

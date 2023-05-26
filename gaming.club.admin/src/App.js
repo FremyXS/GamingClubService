@@ -1,18 +1,17 @@
-import logo from './logo.svg';
 import { Admin, Resource, ListGuesser, fetchUtils } from 'react-admin';
-import jsonServerProvider from 'ra-data-json-server';
-import './App.css';
 import { EquipmentCreate, EquipmentEdit, EquipmentList } from './components/settings/equipment-settings';
+import { EquipmentsTypeList } from './components/settings/equipments-type-settings';
 import { EquipmentsModelCreate, EquipmentsModelEdit, EquipmentsModelList } from './components/settings/equipments-model-settings';
-import { EquipmentsTypeCreate, EquipmentsTypeEdit, EquipmentsTypeList } from './components/settings/equipments-type-settings';
 import { EquipmentsConditionCreate, EquipmentsConditionEdit, EquipmentsConditionList } from './components/settings/equipments-condition-settings';
 import { PackageCreate, PackageEdit, PackageList } from './components/settings/package-settings';
 import { ReservationCreate, ReservationEdit, ReservationList } from './components/settings/reservations-settings';
 import { ReservationStatusList } from './components/settings/reservations-status-settings';
 import authProvider from './halpers/authProvider';
 import { Dashboard } from '@mui/icons-material';
-import { nameRoles, roles } from './commons/roles';
+import { nameRoles } from './commons/roles';
 import simpleRestProvider from 'ra-data-simple-rest';
+import MyChart from './components/charts/MyCharts';
+import React from 'react';
 
 const httpClient = async (url, options = {}) => {
   if (!options.headers) {
@@ -46,6 +45,7 @@ const App = () => (
             <Resource name='package' list={PackageList} edit={PackageEdit} create={PackageCreate} />
             <Resource name='reservations/reservation' list={ReservationList} edit={ReservationEdit} create={ReservationCreate} />
             <Resource name='reservations/analytics' list={ListGuesser} />
+            <Resource name='analytics' list={MyChart} />
           </>
         }
         {permissions === nameRoles.user &&

@@ -51,11 +51,6 @@ export class ReservationController {
     return this.reservationService.remove(+id);
   }
 
-  @Post('status')
-  async statusCreate(@Body() createStatusDto: CreateStatusDto) {
-    return this.reservationService.statusCreate(createStatusDto);
-  }
-
   @Get('status')
   async statusFindAll(@Response() res: Res) {
     const data = await this.reservationService.statusFindAll();
@@ -65,18 +60,5 @@ export class ReservationController {
   @Get('status/:id')
   async statusFindOne(@Param('id') id: string) {
     return this.reservationService.statusFindOne(+id);
-  }
-
-  @Put('status/:id')
-  async statusUpdate(
-    @Param('id') id: string,
-    @Body() updateStatusDto: UpdateStatusDto,
-  ) {
-    return this.reservationService.statusUpdate(+id, updateStatusDto);
-  }
-
-  @Delete('status/:id')
-  async statusRemove(@Param('id') id: string) {
-    return this.reservationService.statusRemove(+id);
   }
 }

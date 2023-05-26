@@ -5,9 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Status } from './entities/status.entity';
 import { Repository } from 'typeorm';
 import { Reservation } from './entities/reservation.entity';
-import { CreateStatusDto } from './dto/create-status.dto';
-import { UpdateStatusDto } from './dto/update-status.dto';
 import { Package } from 'src/package/entities/package.entity';
+import { StatusesEnum } from './entities/status.enum';
 
 @Injectable()
 export class ReservationService {
@@ -21,6 +20,35 @@ export class ReservationService {
   ) {}
 
   //reservation
+  private getTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(Number(hours));
+    date.setMinutes(Number(minutes));
+    console.log(date); // выводит текущую дату с указанным временем
+    return date;
+  };
+
+  private getSettingsPackage = (packages: Package[]) => {
+    let startTime = '23:59';
+    let endTime = '00:00';
+    let price = 0;
+
+    packages.forEach((el) => {
+      if (this.getTime(el.startTime) < this.getTime(startTime)) {
+        startTime = el.startTime;
+      }
+
+      if (this.getTime(el.endTime) > this.getTime(endTime)) {
+        endTime = el.endTime;
+      }
+
+      price += Number(el.price);
+    });
+
+    return { startTime, endTime, price };
+  };
+
   async create(createReservationDto: CreateReservationDto) {
     const packages: Package[] = [];
 
@@ -30,28 +58,31 @@ export class ReservationService {
       });
 
       if (!packageEntity) {
-        throw new NotFoundException(
-          `Package whit id: ${createReservationDto.statusId} not found`,
-        );
+        throw new NotFoundException(`Package whit id: ${el} not found`);
       }
 
       packages.push(packageEntity);
     });
 
     const status = await this.statusRepository.findOneBy({
-      id: createReservationDto.statusId,
+      name: StatusesEnum.Expectation,
     });
 
     if (!status) {
       throw new NotFoundException(
-        `Status whit id: ${createReservationDto.statusId} not found`,
+        `Status whit name: ${StatusesEnum.Expectation} not found`,
       );
     }
+
+    const { startTime, endTime, price } = this.getSettingsPackage(packages);
 
     const newReservation = this.reservationRepository.create({
       ...createReservationDto,
       status: status,
       packages: packages,
+      startTime: startTime,
+      endTime: endTime,
+      price: price,
     });
 
     return await this.reservationRepository.save(newReservation);
@@ -89,9 +120,7 @@ export class ReservationService {
       });
 
       if (!packageEntity) {
-        throw new NotFoundException(
-          `Package whit id: ${updateReservationDto.statusId} not found`,
-        );
+        throw new NotFoundException(`Package whit id: ${el} not found`);
       }
 
       packages.push(packageEntity);
@@ -135,14 +164,6 @@ export class ReservationService {
 
   //status
 
-  async statusCreate(createStatusDto: CreateStatusDto) {
-    const newStatus = this.statusRepository.create({
-      ...createStatusDto,
-    });
-
-    return await this.statusRepository.save(newStatus);
-  }
-
   async statusFindAll() {
     return await this.statusRepository.find();
   }
@@ -151,35 +172,5 @@ export class ReservationService {
     return await this.statusRepository.findOneBy({
       id: id,
     });
-  }
-
-  async statusUpdate(id: number, updateStatusDto: UpdateStatusDto) {
-    const status = await this.statusRepository.findOneBy({
-      id: id,
-    });
-
-    if (!status) {
-      throw new NotFoundException(`Status whit id: ${id} not found`);
-    }
-
-    await this.statusRepository.update(id, {
-      ...updateStatusDto,
-    });
-
-    return `This action updates a #${id} status`;
-  }
-
-  async statusRemove(id: number) {
-    const status = await this.statusRepository.findOneBy({
-      id: id,
-    });
-
-    if (!status) {
-      throw new NotFoundException(`Status whit id: ${id} not found`);
-    }
-
-    await this.statusRepository.remove(status);
-
-    return `This action removes a #${id} status`;
   }
 }

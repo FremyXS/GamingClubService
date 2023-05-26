@@ -54,6 +54,7 @@ export class ReservationService {
   async create(createReservationDto: CreateReservationDto, userLogin: string) {
     const packages: Package[] = [];
 
+    console.log(createReservationDto);
     createReservationDto.packageIds.forEach(async (el) => {
       const packageEntity = await this.packageRepository.findOneBy({
         id: el,

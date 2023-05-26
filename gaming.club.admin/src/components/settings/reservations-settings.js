@@ -9,6 +9,7 @@ export const ReservationList = () => (
     <List>
         <Datagrid>
             <TextField source="id" />
+            <TextField source="date" />
             <TextField source="startTime" />
             <TextField source="endTime" />
             <NumberField source="price" />
@@ -36,12 +37,7 @@ export const ReservationEdit = () => {
         <Edit title={<ReservationTitle />}>
             <SimpleForm>
                 <TextInput disabled source="id" />
-                <TextInput source="startTime" />
-                <TextInput source="endTime" />
-                <NumberInput source="price" />
-                <ReferenceArrayInput source="packageIds" reference="package">
-                    <SelectArrayInput optionText="name" />
-                </ReferenceArrayInput>
+                <TextInput source="date" />
                 <ReferenceInput source="statusId" reference="reservations/status">
                     <SelectInput optionText="name" />
                 </ReferenceInput>
@@ -54,15 +50,10 @@ export const ReservationEdit = () => {
 export const ReservationCreate = () => (
     <Create title="Create a Post">
         <SimpleForm>
-            <TextInput source="startTime" />
-            <TextInput source="endTime" />
-            <NumberInput source="price" />
+            <TextInput source="date" />
             <ReferenceArrayInput source="packageIds" reference="package">
                 <SelectArrayInput optionText="name" />
             </ReferenceArrayInput>
-            <ReferenceInput source="statusId" reference="reservations/status">
-                <SelectInput optionText="name" />
-            </ReferenceInput>
             <EditButton />
         </SimpleForm>
     </Create>

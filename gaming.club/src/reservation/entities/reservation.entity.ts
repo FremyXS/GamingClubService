@@ -52,4 +52,8 @@ export class Reservation {
   @ManyToOne(() => User, (user) => user.reservations)
   @JoinColumn()
   user: User;
+
+  @ApiProperty()
+  @Column({ type: 'date' })
+  date: Date;
 }

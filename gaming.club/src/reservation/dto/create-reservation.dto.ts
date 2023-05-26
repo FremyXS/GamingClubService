@@ -21,4 +21,10 @@ export class CreateReservationDto {
 
   @ApiProperty()
   packageIds: number[];
+
+  @ApiProperty({
+    format: 'date',
+    example: '01-12-2023',
+  })
+  date: Date;
 }

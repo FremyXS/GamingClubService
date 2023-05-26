@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Response,
+  Header,
 } from '@nestjs/common';
 import { PackageService } from './package.service';
 import { CreatePackageDto } from './dto/create-package.dto';
@@ -29,12 +30,17 @@ export class PackageController {
   }
 
   @Get()
+  @Header('Content-Range', 'packages 0-9/100')
   @ApiResponse({
     type: [Package],
   })
   async findAll(@Response() res: Res) {
     const data = await this.packageService.findAll();
-    return res.set({ 'X-Total-Count': data.length }).json(data);
+    return res
+      .set({
+        'X-Total-Count': data.length,
+      })
+      .json(data);
   }
 
   @Get(':id')

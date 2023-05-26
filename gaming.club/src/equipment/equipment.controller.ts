@@ -9,6 +9,7 @@ import {
   Query,
   Response,
   Put,
+  Header,
 } from '@nestjs/common';
 import { EquipmentService } from './equipment.service';
 import { CreateEquipmentDto } from './dto/create-equipment.dto';
@@ -47,6 +48,7 @@ export class EquipmentController {
     return this.equipmentService.create(createEquipmentDto);
   }
 
+  @Header('Content-Range', 'equipments 0-9/100')
   @Get('equipment')
   @ApiResponse({
     type: [Equipment],
@@ -86,6 +88,7 @@ export class EquipmentController {
     return this.equipmentService.createModel(createEquipmentDto);
   }
 
+  @Header('Content-Range', 'models 0-9/100')
   @Get('model')
   @ApiOkResponse({ type: Model, isArray: true })
   @ApiOperation({ summary: 'Get all entities' })
@@ -125,6 +128,7 @@ export class EquipmentController {
     return this.equipmentService.createType(params);
   }
 
+  @Header('Content-Range', 'types 0-9/100')
   @Get('type')
   @ApiResponse({
     type: [Type],
@@ -162,6 +166,7 @@ export class EquipmentController {
     return this.equipmentService.createConditon(params);
   }
 
+  @Header('Content-Range', 'conditions 0-9/100')
   @Get('condition')
   @ApiResponse({
     type: [Condition],

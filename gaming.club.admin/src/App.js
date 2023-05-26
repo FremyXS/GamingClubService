@@ -1,5 +1,5 @@
 import logo from './logo.svg';
-import { Admin, Resource, ListGuesser } from 'react-admin';
+import { Admin, Resource, ListGuesser, fetchUtils } from 'react-admin';
 import jsonServerProvider from 'ra-data-json-server';
 import './App.css';
 import { EquipmentCreate, EquipmentEdit, EquipmentList } from './components/settings/equipment-settings';
@@ -8,12 +8,22 @@ import { EquipmentsTypeCreate, EquipmentsTypeEdit, EquipmentsTypeList } from './
 import { EquipmentsConditionCreate, EquipmentsConditionEdit, EquipmentsConditionList } from './components/settings/equipments-condition-settings';
 import { PackageCreate, PackageEdit, PackageList } from './components/settings/package-settings';
 import { ReservationCreate, ReservationEdit, ReservationList } from './components/settings/reservations-settings';
-import { ReservationStatusCreate, ReservationStatusEdit, ReservationStatusList } from './components/settings/reservations-status-settings';
+import { ReservationStatusList } from './components/settings/reservations-status-settings';
 import authProvider from './halpers/authProvider';
 import { Dashboard } from '@mui/icons-material';
 import { nameRoles, roles } from './commons/roles';
+import simpleRestProvider from 'ra-data-simple-rest';
 
-const dataProvider = jsonServerProvider('http://localhost:8000');
+const httpClient = async (url, options = {}) => {
+  if (!options.headers) {
+    options.headers = new Headers({ Accept: 'application/json' });
+  }
+  const token = localStorage.getItem('token');
+  options.headers.set('Authorization', `Bearer ${token}`);
+  return fetchUtils.fetchJson(url, options);
+};
+
+const dataProvider = simpleRestProvider('http://localhost:8000', httpClient);
 
 const App = () => (
   <Admin dashboard={Dashboard} dataProvider={dataProvider} authProvider={authProvider}>
@@ -27,18 +37,24 @@ const App = () => (
             <Resource name='equipments/condition' list={EquipmentsConditionList} edit={EquipmentsConditionEdit} create={EquipmentsConditionCreate} />
             <Resource name='package' list={PackageList} edit={PackageEdit} create={PackageCreate} />
             <Resource name='reservations/reservation' list={ReservationList} edit={ReservationEdit} create={ReservationCreate} />
-            <Resource name='reservations/status' list={ReservationStatusList} edit={ReservationStatusEdit} create={ReservationStatusCreate} />
+            <Resource name='reservations/status' list={ReservationStatusList} />
           </>
         }
         {permissions === nameRoles.manager &&
           <>
             <Resource title="Equipments" name='equipments/equipment' list={EquipmentList} edit={EquipmentEdit} create={EquipmentCreate} />
-            <Resource name='equipments/model' list={EquipmentsModelList}/>
-            <Resource name='equipments/type' list={EquipmentsTypeList}/>
-            <Resource name='equipments/condition' list={EquipmentsConditionList}/>
+            <Resource name='equipments/model' list={EquipmentsModelList} />
+            <Resource name='equipments/type' list={EquipmentsTypeList} />
+            <Resource name='equipments/condition' list={EquipmentsConditionList} />
             <Resource name='package' list={PackageList} edit={PackageEdit} create={PackageCreate} />
             <Resource name='reservations/reservation' list={ReservationList} edit={ReservationEdit} create={ReservationCreate} />
             <Resource name='reservations/status' list={ReservationStatusList} />
+          </>
+        }
+        {permissions === nameRoles.user &&
+          <>
+            <Resource name='package' list={ListGuesser} />
+            <Resource name='reservations/reservation' list={ReservationList} edit={ReservationEdit} create={ReservationCreate} />
           </>
         }
       </>

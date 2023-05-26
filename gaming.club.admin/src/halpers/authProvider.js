@@ -35,7 +35,9 @@ const authProvider = {
     },
     // called when the API returns an error
     checkError: ({ status }) => {
-        if (status === 401 || status === 403) {
+        if (
+            // status === 401 ||
+             status === 403) {
             localStorage.removeItem('token');
             localStorage.removeItem('role');
             localStorage.removeItem('username');

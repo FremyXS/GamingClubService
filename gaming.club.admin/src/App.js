@@ -1,11 +1,8 @@
 import { Admin, Resource, ListGuesser, fetchUtils } from 'react-admin';
 import { EquipmentCreate, EquipmentEdit, EquipmentList } from './components/settings/equipment-settings';
-import { EquipmentsTypeList } from './components/settings/equipments-type-settings';
 import { EquipmentsModelCreate, EquipmentsModelEdit, EquipmentsModelList } from './components/settings/equipments-model-settings';
-import { EquipmentsConditionCreate, EquipmentsConditionEdit, EquipmentsConditionList } from './components/settings/equipments-condition-settings';
 import { PackageCreate, PackageEdit, PackageList } from './components/settings/package-settings';
 import { ReservationCreate, ReservationEdit, ReservationList } from './components/settings/reservations-settings';
-import { ReservationStatusList } from './components/settings/reservations-status-settings';
 import authProvider from './halpers/authProvider';
 import { Dashboard } from '@mui/icons-material';
 import { nameRoles } from './commons/roles';
@@ -33,8 +30,8 @@ const App = () => (
           <>
             <Resource name='equipments/equipment' list={EquipmentList} edit={EquipmentEdit} create={EquipmentCreate} />
             <Resource name='equipments/model' list={EquipmentsModelList} edit={EquipmentsModelEdit} create={EquipmentsModelCreate} />
-            <Resource name='equipments/type' list={EquipmentsTypeList} />
-            <Resource name='equipments/condition' list={EquipmentsConditionList} edit={EquipmentsConditionEdit} create={EquipmentsConditionCreate} />
+            <Resource name='equipments/type' list={ListGuesser} />
+            <Resource name='equipments/condition' list={ListGuesser}/>
             <Resource name='package' list={PackageList} edit={PackageEdit} create={PackageCreate} />
             <Resource name='users/user' list={UserList} edit={UserEdit} create={UserCreate} />
           </>

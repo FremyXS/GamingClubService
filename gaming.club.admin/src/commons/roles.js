@@ -3,13 +3,3 @@ export const nameRoles = {
     manager: 'manager',
     user: 'user'
 }
-
-export const roles = {
-    admin: [{ action: '*', resource: '*' }],
-    manager: [
-        {
-            action: ['list', 'create', 'edit', 'delete'],
-            resource: 'equipments/equipment',
-        },
-    ]
-};

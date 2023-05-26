@@ -137,14 +137,6 @@ export class EquipmentController {
 
   //Conditions
 
-  @Post('condition')
-  @ApiBody({
-    type: CreateConditionDto,
-  })
-  async createCondition(@Body() params: CreateConditionDto) {
-    return this.equipmentService.createConditon(params);
-  }
-
   @Header('Content-Range', 'conditions 0-9/100')
   @Get('condition')
   @ApiResponse({
@@ -158,21 +150,5 @@ export class EquipmentController {
   @Get('condition/:id')
   async findOneCondition(@Param('id') id: string) {
     return this.equipmentService.findOneCondtioon(+id);
-  }
-
-  @Put('condition/:id')
-  @ApiBody({
-    type: UpdateConditionDto,
-  })
-  async updateCondition(
-    @Param('id') id: string,
-    @Body() params: UpdateConditionDto,
-  ) {
-    return this.equipmentService.updateCondition(+id, params);
-  }
-
-  @Delete('condition/:id')
-  async removeCondition(@Param('id') id: string) {
-    return this.equipmentService.removeCondition(+id);
   }
 }

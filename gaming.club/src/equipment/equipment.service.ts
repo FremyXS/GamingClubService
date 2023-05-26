@@ -341,24 +341,6 @@ export class EquipmentService {
 
   // Conditions
 
-  async createConditon(params: CreateConditionDto) {
-    const condition = await this.conditionRepository.findOneBy({
-      name: params.name,
-    });
-
-    if (condition) {
-      throw new NotFoundException(
-        `Related entity with ID ${params.name} is live`,
-      );
-    }
-
-    const newCondition = this.conditionRepository.create({
-      ...params,
-    });
-
-    return await this.conditionRepository.save(newCondition);
-  }
-
   async findAllCondition() {
     return await this.conditionRepository.find();
   }
@@ -375,37 +357,4 @@ export class EquipmentService {
     return condition;
   }
 
-  async updateCondition(id: number, params: UpdateConditionDto) {
-    const condition = await this.conditionRepository.findOneBy({
-      id: id,
-    });
-
-    if (!condition) {
-      throw new NotFoundException(`Related entity with ID ${id} not found`);
-    }
-
-    await this.conditionRepository.update(
-      {
-        id: id,
-      },
-      {
-        ...params,
-      },
-    );
-
-    return `This action updates a #${id} type`;
-  }
-
-  async removeCondition(id: number) {
-    const condition = await this.conditionRepository.findOneBy({
-      id: id,
-    });
-
-    if (!condition) {
-      throw new NotFoundException(`Related entity with ID ${id} not found`);
-    }
-
-    await this.conditionRepository.remove(condition);
-    return `This action removes a #${id} condition`;
-  }
 }

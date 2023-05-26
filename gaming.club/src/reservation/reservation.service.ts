@@ -135,6 +135,27 @@ export class ReservationService {
     await this.analitycsRepository.save(model);
   };
 
+  private changeMinDataToAnalytics = async (price: number) => {
+    const currentDate = new Date();
+    let model = await this.analitycsRepository.findOneBy({
+      date: currentDate,
+    });
+
+    if (!model) {
+      model = this.analitycsRepository.create({
+        date: currentDate,
+        countPayments: 0,
+        countCancellations: 0,
+        payday: 0,
+      });
+    }
+
+    model.payday -= price;
+    model.countCancellations++;
+
+    await this.analitycsRepository.save(model);
+  };
+
   async create(createReservationDto: CreateReservationDto, userLogin: string) {
     const currentDate = new Date();
     console.log(`Current date is ${currentDate}`);
@@ -307,6 +328,8 @@ export class ReservationService {
     reservation.status = await this.statusRepository.findOneBy({
       name: StatusesEnum.Cancelled,
     });
+
+    this.changeMinDataToAnalytics(reservation.price);
 
     await this.reservationRepository.update(
       {

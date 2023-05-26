@@ -120,14 +120,6 @@ export class EquipmentController {
 
   //Types
 
-  @Post('type')
-  @ApiBody({
-    type: CreateTypeDto,
-  })
-  async createType(@Body() params: CreateTypeDto) {
-    return this.equipmentService.createType(params);
-  }
-
   @Header('Content-Range', 'types 0-9/100')
   @Get('type')
   @ApiResponse({
@@ -141,19 +133,6 @@ export class EquipmentController {
   @Get('type/:id')
   async findOneType(@Param('id') id: string) {
     return this.equipmentService.findOneType(+id);
-  }
-
-  @Put('type/:id')
-  @ApiBody({
-    type: UpdateTypeDto,
-  })
-  async updateType(@Param('id') id: string, @Body() params: UpdateTypeDto) {
-    return this.equipmentService.updateType(+id, params);
-  }
-
-  @Delete('type/:id')
-  async removeType(@Param('id') id: string) {
-    return this.equipmentService.removeType(+id);
   }
 
   //Conditions

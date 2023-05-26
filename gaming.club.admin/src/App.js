@@ -43,12 +43,9 @@ const App = () => (
         {permissions === nameRoles.manager &&
           <>
             <Resource title="Equipments" name='equipments/equipment' list={EquipmentList} edit={EquipmentEdit} create={EquipmentCreate} />
-            <Resource name='equipments/model' list={EquipmentsModelList} />
-            <Resource name='equipments/type' list={EquipmentsTypeList} />
-            <Resource name='equipments/condition' list={EquipmentsConditionList} />
             <Resource name='package' list={PackageList} edit={PackageEdit} create={PackageCreate} />
             <Resource name='reservations/reservation' list={ReservationList} edit={ReservationEdit} create={ReservationCreate} />
-            <Resource name='reservations/status' list={ReservationStatusList} />
+            <Resource name='reservations/analytics' list={ListGuesser} />
           </>
         }
         {permissions === nameRoles.user &&
@@ -59,15 +56,6 @@ const App = () => (
         }
       </>
     )}
-    {/* 
-    <Resource title="Equipments" name='equipments/equipment' list={EquipmentList} edit={EquipmentEdit} create={EquipmentCreate} />
-    <Resource name='equipments/model' list={EquipmentsModelList} edit={EquipmentsModelEdit} create={EquipmentsModelCreate} />
-    <Resource name='equipments/type' list={EquipmentsTypeList} edit={EquipmentsTypeEdit} create={EquipmentsTypeCreate} />
-    <Resource name='equipments/condition' list={EquipmentsConditionList} edit={EquipmentsConditionEdit} create={EquipmentsConditionCreate} />
-    <Resource name='package' list={PackageList} edit={PackageEdit} create={PackageCreate} />
-    <Resource name='reservations/reservation' list={ReservationList} edit={ReservationEdit} create={ReservationCreate} />
-    <Resource name='reservations/status' list={ReservationStatusList} edit={ReservationStatusEdit} create={ReservationStatusCreate} /> 
-    */}
   </Admin>
 );
 
